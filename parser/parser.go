@@ -45,6 +45,7 @@ func (p *Parser) GetCurrentBlock() (int, error) {
 
 func (p *Parser) Start(ctx context.Context, tickerInternal time.Duration) {
 	ticker := time.NewTicker(tickerInternal)
+	defer ticker.Stop()
 
 	for {
 		select {

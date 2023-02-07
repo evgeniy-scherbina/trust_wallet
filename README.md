@@ -6,6 +6,10 @@ Project consists of 3 main components:
 - in-memory storage (which can be replaced with persistent storage in the future)
 - parser itself which is backed by previous two components
 
+`main.go` contains interface itself if you want to play around in `main()` function
+
+`parser_test.go` contains tests which can be used as an example how to use parser API
+
 ## Install dependencies (one library for tests: github.com/stretchr/testify)
 `go mod tidy`
 

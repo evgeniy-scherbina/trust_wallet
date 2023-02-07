@@ -4,6 +4,7 @@ import lib_eth "github.com/evgeniy-scherbina/trust_wallet/lib/eth"
 
 type InMemoryStorage struct {
 	subscribedAddresses map[string]struct{}
+	lastProcessedBlock  int
 
 	addrToTxs map[string][]*lib_eth.Transaction
 }
@@ -13,6 +14,14 @@ func NewInMemoryStorage() *InMemoryStorage {
 		subscribedAddresses: make(map[string]struct{}),
 		addrToTxs:           make(map[string][]*lib_eth.Transaction),
 	}
+}
+
+func (s *InMemoryStorage) LastProcessedBlock() int {
+	return s.lastProcessedBlock
+}
+
+func (s *InMemoryStorage) SetLastProcessedBlock(lastProcessedBlock int) {
+	s.lastProcessedBlock = lastProcessedBlock
 }
 
 func (s *InMemoryStorage) Subscribe(address string) {

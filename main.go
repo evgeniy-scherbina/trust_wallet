@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"time"
 
 	lib_eth "github.com/evgeniy-scherbina/trust_wallet/lib/eth"
 )
@@ -18,8 +19,7 @@ type Parser interface {
 	// list of inbound or outbound transactions for an address
 	GetTransactions(address string) []*lib_eth.Transaction
 
-	Start(ctx context.Context)
-	SetLastProcessedBlock(int)
+	Start(ctx context.Context, tickerInternal time.Duration)
 	ScanBlockRange(blockToStart, blockToEnd int) error
 }
 

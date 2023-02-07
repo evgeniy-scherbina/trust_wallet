@@ -2,7 +2,6 @@ package parser
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -11,22 +10,22 @@ import (
 )
 
 type Storage interface {
+	LastProcessedBlock() int
+	SetLastProcessedBlock(lastProcessedBlock int)
 	Subscribe(address string)
 	GetTransactions(address string) []*lib_eth.Transaction
 	ProcessTx(tx *lib_eth.Transaction)
 }
 
 type Parser struct {
-	ethClient          *eth_client.ETHClient
-	lastProcessedBlock int
+	ethClient *eth_client.ETHClient
 
 	storage Storage
 }
 
 func New(ethClient *eth_client.ETHClient, storage Storage) *Parser {
 	return &Parser{
-		ethClient:          ethClient,
-		lastProcessedBlock: 0,
+		ethClient: ethClient,
 
 		storage: storage,
 	}
@@ -44,8 +43,8 @@ func (p *Parser) GetCurrentBlock() (int, error) {
 	return p.ethClient.GetBlockNumber()
 }
 
-func (p *Parser) Start(ctx context.Context) {
-	ticker := time.NewTicker(time.Second * 10)
+func (p *Parser) Start(ctx context.Context, tickerInternal time.Duration) {
+	ticker := time.NewTicker(tickerInternal)
 
 	for {
 		select {
@@ -56,7 +55,7 @@ func (p *Parser) Start(ctx context.Context) {
 				continue
 			}
 
-			err = p.ScanBlockRange(p.lastProcessedBlock+1, currentBlockNumber)
+			err = p.ScanBlockRange(p.storage.LastProcessedBlock()+1, currentBlockNumber)
 			if err != nil {
 				log.Print(err)
 				continue
@@ -65,10 +64,6 @@ func (p *Parser) Start(ctx context.Context) {
 			return
 		}
 	}
-}
-
-func (p *Parser) SetLastProcessedBlock(lastProcessedBlock int) {
-	p.lastProcessedBlock = lastProcessedBlock
 }
 
 func (p *Parser) ScanBlockRange(blockToStart, blockToEnd int) error {
@@ -96,7 +91,9 @@ func (p *Parser) scanBlock(blockNum int) error {
 		p.storage.ProcessTx(tx)
 	}
 
-	fmt.Printf("Processed Transactions: %v\n", len(block.Transactions))
+	p.storage.SetLastProcessedBlock(blockNum)
+
+	//fmt.Printf("Processed Transactions: %v\n", len(block.Transactions))
 
 	return nil
 }

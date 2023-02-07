@@ -1,5 +1,11 @@
 # trust_wallet
 
+## Description:
+Project consists of 3 main components:
+- custom eth JSON-RPC client
+- in-memory storage (which can be replaced with persistent storage in the future)
+- parser itself which is backed by previous two components
+
 ## Install dependencies (one library for tests: github.com/stretchr/testify)
 `go mod tidy`
 

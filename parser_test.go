@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/evgeniy-scherbina/trust_wallet/parser/storage"
 	"testing"
 	"time"
 
@@ -28,7 +29,7 @@ func TestETHClient(t *testing.T) {
 func TestScanBlockRange(t *testing.T) {
 	// setup parser
 	ethClient := eth_client.New(nodeAddr)
-	var parser Parser = parser.New(ethClient)
+	var parser Parser = parser.New(ethClient, storage.NewInMemoryStorage())
 
 	// subscribe to address
 	addrToTest := "0x8606de07aa34505ff5c2348c60f8cde608340f7c"
@@ -54,7 +55,7 @@ func TestScanBlockRange(t *testing.T) {
 func TestParserInRealTimeMode(t *testing.T) {
 	// setup parser
 	ethClient := eth_client.New(nodeAddr)
-	var parser Parser = parser.New(ethClient)
+	var parser Parser = parser.New(ethClient, storage.NewInMemoryStorage())
 	parser.SetLastProcessedBlock(blockNum - 1)
 
 	// subscribe to address

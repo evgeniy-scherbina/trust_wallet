@@ -3,26 +3,32 @@ package parser
 import (
 	"context"
 	"fmt"
-	"github.com/evgeniy-scherbina/trust_wallet/eth_client"
-	lib_eth "github.com/evgeniy-scherbina/trust_wallet/lib/eth"
-	"github.com/evgeniy-scherbina/trust_wallet/parser/storage"
 	"log"
 	"time"
+
+	"github.com/evgeniy-scherbina/trust_wallet/eth_client"
+	lib_eth "github.com/evgeniy-scherbina/trust_wallet/lib/eth"
 )
+
+type Storage interface {
+	Subscribe(address string)
+	GetTransactions(address string) []*lib_eth.Transaction
+	ProcessTx(tx *lib_eth.Transaction)
+}
 
 type Parser struct {
 	ethClient          *eth_client.ETHClient
 	lastProcessedBlock int
 
-	storage *storage.InMemoryStorage
+	storage Storage
 }
 
-func New(ethClient *eth_client.ETHClient) *Parser {
+func New(ethClient *eth_client.ETHClient, storage Storage) *Parser {
 	return &Parser{
 		ethClient:          ethClient,
 		lastProcessedBlock: 0,
 
-		storage: storage.NewInMemoryStorage(),
+		storage: storage,
 	}
 }
 
